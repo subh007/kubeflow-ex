@@ -21,3 +21,13 @@ def sin(val: float=3.14)->float:
 # defined outside of the function, imports outside of the function, 
 # code in adjacent Python modules, etc. To achieve this, the KFP 
 # SDK provides a convenient way to package your Python code into a container.
+
+"""
+Container Components, unlike Python Components, enable component authors to set 
+the image, command, and args directly. This makes it possible to author components 
+that execute shell scripts, use other languages and binaries, etc., all from within 
+the KFP Python SDK.
+"""
+@dsl.container_component
+def say_hello():
+    return dsl.ContainerSpec(image='alpine', command=['echo'], args=['hello'])
