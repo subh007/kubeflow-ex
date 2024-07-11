@@ -31,3 +31,7 @@ the KFP Python SDK.
 @dsl.container_component
 def say_hello():
     return dsl.ContainerSpec(image='alpine', command=['echo'], args=['hello'])
+
+@dsl.component
+def say_hello_name(name: str) -> str:
+    return f"hi {name}" 
