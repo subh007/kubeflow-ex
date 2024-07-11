@@ -9,3 +9,8 @@ def add_number(a: int, b: int) -> int:
 @dsl.component
 def sub_number(a: int, b: int) -> int:
     return a - b
+
+@dsl.component(packages_to_install=['numpy==1.21.6'])
+def sin(val: float=3.14)->float:
+    import numpy as np
+    return np.sin(val).item()
