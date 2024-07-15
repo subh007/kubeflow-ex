@@ -1,5 +1,7 @@
 from kfp import dsl,compiler
 from my_component import *
+from kfp import kubernetes
+
 
 @dsl.pipeline
 def hello_pipeline():
@@ -15,7 +17,9 @@ def add_number_pipeline(a: int, b: int)-> int:
 
 @dsl.pipeline
 def get_iris_dataset()->dsl.Dataset:
-    return get_dataset().output
+    comp = get_dataset()
+    kubernetes.set_image_pull_policy(comp, "IfNotPresent")
+    return comp.output
 
 # compiler.Compiler().compile(hello_pipeline, 'pipeline.yaml')
 # compiler.Compiler().compile(hello_name_pipeline, 'pipeline.yaml')
