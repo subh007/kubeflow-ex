@@ -29,5 +29,6 @@ compiler.Compiler().compile(get_iris_dataset, 'pipeline.yaml')
 
 from kfp.client import Client
 client = Client(host='http://localhost:8080')
+client.upload_pipeline_version(pipeline_package_path='pipeline.yaml',pipeline_version_name='v2', pipeline_name='sample-pipeline')
 client.create_run_from_pipeline_package('pipeline.yaml', arguments={})
 
