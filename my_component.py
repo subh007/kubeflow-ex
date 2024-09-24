@@ -56,3 +56,28 @@ def get_dataset(iris_dataset: Output[Dataset]):
 
     with open(iris_dataset.path, 'w') as f:
         df.to_csv(f)
+
+@dsl.component(packages_to_install=['pandas==1.3.5', 'scikit-learn==1.0.2'])
+def train_model(
+    normalized_iris_dataset: Input[Dataset],
+    model: Output[Model],
+    n_neighbors: int,
+):
+    import pickle
+
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    from sklearn.neighbors import KNeighborsClassifier
+
+    with open(normalized_iris_dataset.path) as f:
+        df = pd.read_csv(f)
+
+    y = df.pop('Labels')
+    X = df
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+    clf = KNeighborsClassifier(n_neighbors=n_neighbors)
+    clf.fit(X_train, y_train)
+    with open(model.path, 'wb') as f:
+        pickle.dump(clf, f)
