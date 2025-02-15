@@ -1,6 +1,8 @@
 from kfp import dsl,compiler
 from my_component import *
 from kfp import kubernetes
+from src.nn_component import prepare_data
+from src.nn_components.get_train_data import getTestData
 
 
 @dsl.pipeline
@@ -20,19 +22,31 @@ def get_iris_dataset()->dsl.Model:
     comp = get_dataset()
     kubernetes.set_image_pull_policy(comp, "IfNotPresent")
 
-
     train = train_model(normalized_iris_dataset=comp.output, n_neighbors=3)
 
     return train.outputs['model']
 
+@dsl.pipeline
+def get_boston_Data() -> dsl.Dataset:
+    comp = prepare_data()
+    # comp.set_caching_options(False)
+    kubernetes.set_image_pull_policy(comp, "IfNotPresent")
+
+    comp2 = getTestData(data=comp.outputs['boston_data'])
+    # comp2.set_caching_options(False)
+    kubernetes.set_image_pull_policy(comp, "IfNotPresent")
+    
+
+    return comp.outputs['boston_data']
+
 # compiler.Compiler().compile(hello_pipeline, 'pipeline.yaml')
 # compiler.Compiler().compile(hello_name_pipeline, 'pipeline.yaml')
 # compiler.Compiler().compile(add_number_pipeline, 'pipeline.yaml')
-compiler.Compiler().compile(get_iris_dataset, 'pipeline.yaml')
+compiler.Compiler().compile(get_boston_Data, 'pipeline.yaml')
 
 
 from kfp.client import Client
-client = Client(host='http://localhost:8080')
+client = Client(host='http://localhost:3000')
 # client.upload_pipeline_version(pipeline_package_path='pipeline.yaml',pipeline_version_name='v2', pipeline_name='sample-pipeline')
 result = client.create_run_from_pipeline_package('pipeline.yaml', arguments={})
 
