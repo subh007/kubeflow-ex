@@ -1,8 +1,8 @@
 from kfp import dsl,compiler
 from my_component import *
 from kfp import kubernetes
-from src.nn_component import prepare_data
-from src.nn_components.get_train_data import getTestData
+from src.nn_components.prepare_data import prepare_data
+from src.nn_components.get_test_data import getTestData
 
 
 @dsl.pipeline
